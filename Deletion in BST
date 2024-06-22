@@ -1,0 +1,139 @@
+//to delete any element
+void BST::del(int data){
+    node *ptr, *parptr;
+    //no deletion if tree is empty
+    if(root==NULL){
+        throw EMPTY_TREE;
+    }
+    parptr=NULL;
+    ptr=root;
+
+    //this loop is to search the item to be deleted
+    while(ptr){
+        if(ptr->item==data){
+            break;
+        }
+
+        if(data<ptr->item){
+            parptr=ptr; //parent ptr updation
+            ptr=ptr->left;
+        }
+        else{
+            parptr=ptr;  //parent ptr updation
+            ptr=ptr->right;
+        }
+    }
+    //if node mile hi nhi
+    if(ptr==NULL){
+        throw Data_not_found;
+    }
+    //if root node is to be deleted
+    if(parptr==NULL && ptr!=NULL)  
+        {
+            //for no child
+            if(ptr->left==NULL && ptr->right==NULL){
+                delete ptr;
+                root=NULL;
+            }
+            //for two child
+           else if(ptr->left && ptr->right){
+            node *succ, *parentsucc;
+            succ=ptr->right;
+            parentsucc=ptr;
+            while(succ->left!=NULL){
+                parentsucc=succ;
+                succ=succ->left;
+            }
+            ptr->item=succ->item;
+                if(succ==parentsucc->left)
+                parentsucc->left=succ->right;
+                else
+                parentsucc->right=succ->right;
+                //at last we do the deletion
+                delete succ;
+
+
+
+            }
+            //for single child
+            else{
+            
+                if(ptr->left!=NULL){
+                    root=ptr->left;
+                    
+                }
+                else{
+                    root=ptr->right;
+                }
+                delete ptr;
+            }
+    }
+
+    //node to be deleted is not a root node
+    else{
+
+        //case 1 ----no child
+        if(ptr->left==NULL && ptr->right==NULL){
+           //here we only need to see ki ptr left child hai parent ka ya right child h
+            if(parptr->left==ptr)  //ptr is left child of parent ptr
+                parptr->left=NULL;
+            else   //ptr is right child of parent ptr
+                parptr->right=NULL;
+
+            delete ptr;
+        }
+
+        //case ----2 two child
+        else if(ptr->left && ptr->right){
+            node *succ, *parentsucc;
+            succ=ptr->right;
+            parentsucc=ptr;
+            while(succ->left!=NULL){
+                parentsucc=succ;
+                succ=succ->left;
+            }
+            ptr->item=succ->item;
+            //now we need to delete the successor 
+            //here for deletion we will again have 2 cases
+            //here we cannot call this function again as we have now two nodes with same value
+            //ptr and succ now have same value 
+            //so there will be confusion so as to delete which node
+                //successor ka left toh hoga hi nhi 
+                //sifr right me ya toh null ya toh koi node hoga
+                //so simply check ki succ parent ka left child hai ya right
+                if(succ==parentsucc->left)
+                parentsucc->left=succ->right;
+                else
+                parentsucc->right=succ->right;
+                //at last we do the deletion
+                delete succ;
+        }
+
+        //case 3--- single child
+        else{
+            //check if it is a left child
+            if(ptr==parptr->left){
+                //now check ki delte karne walle node ke konse taraf child hai
+                if(ptr->left)
+                    parptr->left=ptr->left;
+                
+                else
+                    parptr->left=ptr->right;
+                
+                delete ptr;
+            }
+            else{
+                 //now check ki delte karne walle node ke konse taraf child hai
+                if(ptr->left)
+                    parptr->right=ptr->left;
+                else
+                    parptr->right=ptr->right;
+                
+                delete ptr;
+            }
+
+            
+        }
+    }
+
+}
